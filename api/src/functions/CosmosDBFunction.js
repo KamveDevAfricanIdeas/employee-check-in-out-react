@@ -1,49 +1,56 @@
 const { app } = require('@azure/functions');
-//const client = new CosmosClient({ endpoint: process.env["COSMOSDB_ENDPOINT"], key: process.env["COSMOSDB_KEY"] });
+const { CosmosClient } = require("@azure/cosmos");
+/*
+const cosmosClient = new CosmosClient({
+    endpoint: process.env.COSMOSDB_ENDPOINT,
+    key: process.env.COSMOSDB_KEY
+});
+
+const databaseId = 'YourDatabaseName';
+const containerId = 'YourContainerName'; */
 
 app.http('CosmosDBFunction', {
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     authLevel: 'anonymous',
     handler: async (request, context) => {
         context.log(`Http function processed request for url "${request.url}"`);
-        
-        const name = request.query.get('name') || await request.text() || 'Kamve';
+        return { body: `Hello, Kamve` }; 
 
-        return { body: `Hello, ${name}!` };
+        const database = cosmosClient.database(databaseId);
+        const container = database.container(containerId);
+        
+        //handle different request methods:
+        
+        /* switch (request.method) {
+            case 'GET':
+                // Handle GET request
+                const { resources: employees } = await container.employees.readAll().fetchAll();
+                return { body: JSON.stringify(employees) };
+
+            case 'POST':
+                // Handle POST request
+                const newCheckin = await request.json();
+                const { resource: checkInResult } = await container.newCheckin.create(newCheckin);
+                return { body: JSON.stringify(checkInResult) };
+
+            case 'PUT':
+                // Handle PUT request
+                const newCheckout = await request.json(); //updating means checking out
+                const { resource: checkOutResult } = await container.item(newCheckout.id).replace(newCheckout);
+                return { body: JSON.stringify(checkOutResult) };
+
+            case 'DELETE':
+                // Handle DELETE request
+                const employeeId = request.query.get('id');
+                await container.item(employeeId).delete();
+                return { body: `Employee check-in records with id ${employeeId} deleted` };
+
+            default:
+                return { status: 405, body: 'Method Not Allowed' };
+        } */
     }
 });
-
 /* 
-const { CosmosClient } = require("@azure/cosmos");
-
-const client = new CosmosClient({ endpoint: process.env["COSMOSDB_ENDPOINT"], key: process.env["COSMOSDB_KEY"] });
-
-module.exports = async function (context, req) {
-    context.log('JavaScript HTTP trigger function processed a request.');
-
-    const database = client.database("SWAStore");
-    const container = database.container("Items");
-
-    if(req.method === "GET"){ //return all items
-        try {
-            const { resources } = await container.items.readAll().fetchAll();
-            context.res = {
-                status: 200,
-                body: resources
-            };
-        } catch (error) {
-            context.res = {
-                status: 500,
-                body: `Error retrieving items from the database: ${error.message}`
-            };
-        }
-    }
-	//[ POST, PUT AND DELETE ENDPOINTS OMITTED FOR SIMPLICITY, AVAILABLE IN SOURCE CODE ] 
-else {
-        context.res = {
-            status: 405,
-            body: "Method Not Allowed"
-        };
-    }
-}
+const name = request.query.get('name') || await request.text() || 'Kamve';
+return { body: `Hello, ${name}!` }; 
 */

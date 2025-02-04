@@ -1,0 +1,23 @@
+.dropdown-menu {
+    display: flex;
+    justify-content: center;
+    margin: 1rem;
+}
+select {
+    border: none;
+    border-radius: 5px;
+    width: 150px;
+    padding: 0.1rem;
+    background-color: rgb(83, 175, 228);
+}
+select:hover {
+    background-color: rgba(83, 175, 228, 0.7);
+}
+option {
+    width: 150px;
+    padding: 0.1rem;
+    background-color: rgb(155, 199, 202);
+}
+label {
+
+}

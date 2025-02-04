@@ -1,0 +1,28 @@
+.footer-navbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    margin-bottom: 2rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    gap: 1rem;
+    color: rgb(37, 5, 5);
+    background-color: rgba(51, 133, 228, 0.77);
+}
+.social-links {
+    display: flex;
+    gap: 2rem;
+}
+.footer-link {
+    color: rgb(37, 5, 5);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 600;
+}
+    
+.footer-link:hover {
+    color: #000;
+}
