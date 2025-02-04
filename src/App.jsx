@@ -39,6 +39,7 @@ function App() {
     });
     const data = await response.json();
     console.log("Employees: ", data);
+    //data[0].EmployeeName
   };
 
   const Checkin = async (newCheckin) => {
