@@ -1,10 +1,8 @@
-# React + Vite
+# Employee Check-in and Check-out website
+Build a React App hosted on Azure Static Web Apps that leverages Azure Functions to store data in an Azure CosmosDB.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-# employee-check-in-out-react
-# employee-check-in-out-react
+## Part 1
+- [ ] Have a web page that an employee can access from their mobile phone. Select their name from a dropdown list and press a button to check in and have another button to check out.
+- [ ] The dropdown should be populated from a list of employees that is stored on CosmosDB.
+- [ ] When the Checkin Button is clicked, as record needs to be created in CosmosDB with the employee name and the checkin time.
+- [ ] When Checkout is  clicked, the record needs to be updated and Checkout time added.
