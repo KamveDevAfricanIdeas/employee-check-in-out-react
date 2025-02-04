@@ -32,28 +32,33 @@ function App() {
   };
 
   //Actions for the onClick events: Checkin and Checkout:
+  const Display = async () => {
+    const response = await fetch(functionUrl, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+    });
+    const data = await response.json();
+    console.log("Employees: ", data);
+  };
+
   const Checkin = async (newCheckin) => {
     const response = await fetch(functionUrl, {
         method: 'POST',
         body: JSON.stringify(newCheckin),
-        headers: {
-            'Content-Type': 'application/json'
-        }
+        headers: { 'Content-Type': 'application/json' }
     });
     const data = await response.json();
-    console.log(data);
+    console.log("Check-in: ", data);
   };
 
   const Checkout = async (newCheckout) => {
     const response = await fetch(functionUrl, {
         method: 'PUT',
         body: JSON.stringify(newCheckout),
-        headers: {
-            'Content-Type': 'application/json'
-        }
+        headers: { 'Content-Type': 'application/json' }
     });
     const data = await response.json();
-    console.log(data);
+    console.log("Check-out: ", data);
   };
 
   function CheckIn() {
@@ -68,13 +73,14 @@ function App() {
   return (
     <>
         <HeaderNavBar />
+        <DropdownMenu />
         <div>
           <strong>Date Time Now: {formattedDate + " "+formattedTime}</strong>
           <p>Last checkin: {checkedInTime}</p>
           <p>Last checkout: {checkedOutTime}</p>
         </div>
-        <DropdownMenu />
         <div className="button-class">
+          <button type="button" className="checkin-btn" onClick={Display}>Display</button>
           <button type="button" className="checkin-btn" onClick={CheckIn}>Check-In</button>
           <button type="button" className="checkout-btn" onClick={CheckOut}>Check-Out</button>
         </div>
