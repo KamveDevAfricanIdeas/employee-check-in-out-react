@@ -9,8 +9,8 @@ const cosmosClient = new CosmosClient({
     endpoint: process.env.COSMOSDB_ENDPOINT,
     key: process.env.COSMOSDB_KEY
 });
-const databaseId = 'employee_check_in_out';
-const containerId = 'employees';
+const databaseId = 'EmployeeCheckins';
+const containerId = 'EmployeesContainer';
 var cors = require('cors');
 
 app.http('CosmosDBFunction', {
@@ -80,18 +80,8 @@ app.http('CosmosDBFunction', {
                 default:
                     return { status: 405, body: 'Method Not Allowed' };
             }
-            return {
-                status: 200,
-                body: responseBody,
-                headers: {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": "*", // Allow all origins
-                    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE",
-                    "Access-Control-Allow-Headers": "Content-Type"
-                } 
-            };
         }catch (error) {
-            context.log(`Error: ${error.message}`);
+            console.log(`Error: ${error.message}`);
             return { status: 500, body: "Internal Server Error" };
         }
     }

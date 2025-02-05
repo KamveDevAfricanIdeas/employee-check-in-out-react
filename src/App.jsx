@@ -56,11 +56,11 @@ function App() {
     console.log("Check-out: ", data);
   };
 
-  function CheckIn() {
+  function basicCheckIn() {
     setCheckinTime(currentTime.toLocaleTimeString());
     alert('Successfully checked in!');
   }
-  function CheckOut() {
+  function basicCheckOut() {
     setCheckoutTime(currentTime.toLocaleTimeString());
     alert('Successfully checked out!');
   }
@@ -76,8 +76,8 @@ function App() {
         </div>
         <div className="button-class">
           <button type="button" className="checkin-btn" onClick={Display}>Display</button>
-          <button type="button" className="checkin-btn" onClick={CheckIn}>Check-In</button>
-          <button type="button" className="checkout-btn" onClick={CheckOut}>Check-Out</button>
+          <button type="button" className="checkin-btn" onClick={Checkin}>Check-In</button>
+          <button type="button" className="checkout-btn" onClick={basicCheckOut}>Check-Out</button>
         </div>
         <FooterBar />
     </>
