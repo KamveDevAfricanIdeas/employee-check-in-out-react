@@ -76,9 +76,9 @@ function App() {
         <HeaderNavBar />
         <DropdownMenu />
         <div>
-          <strong>Date Time Now: {formattedDate + " "+formattedTime}</strong>
-          <p>Last checkin: {checkedInTime}</p>
-          <p>Last checkout: {checkedOutTime}</p>
+          <strong>Date Time Now: {formattedDate + " " + formattedTime} </strong>
+          <p> Last checkin: {checkedInTime} </p>
+          <p> Last checkout: {checkedOutTime} </p>
         </div>
         <div className="button-class">
           <button type="button" className="checkin-btn" onClick={Display}>Display</button>

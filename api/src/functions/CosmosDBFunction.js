@@ -11,6 +11,7 @@ const cosmosClient = new CosmosClient({
 });
 const databaseId = 'employee_check_in_out';
 const containerId = 'employees';
+var cors = require('cors');
 
 app.http('CosmosDBFunction', {
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
