@@ -8,6 +8,8 @@ function App() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [checkedInTime, setCheckinTime] = useState("");
   const [checkedOutTime, setCheckoutTime] = useState("");
+  const [employeeList, setList] = useState([]);
+  const functionUrl = 'http://localhost:7071/api/CosmosDBFunction';
 
   const updateTime = () => {
     setCurrentTime(new Date());
@@ -17,31 +19,23 @@ function App() {
     const timerId = setInterval(updateTime, 1000); // Update every second
     return () => clearInterval(timerId);
   }, []);
-  
+
+  useEffect(() => {
+    fetch(functionUrl) // Replace with your API URL
+      .then((response) => response.json())
+      .then((data) => {
+        setList(data); // Set the array from fetched JSON data
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+
   const formattedDate = currentTime.toLocaleDateString();
   const formattedTime = currentTime.toLocaleTimeString();
 
-  //connect to CosmosDB and fetch data:
-  //const functionUrl = 'https://<your-function-app-name>.azurewebsites.net/api/CosmosDBFunction';
-  
-  const functionUrl = 'http://localhost:7071/api/CosmosDBFunction';
-  const fetchData = async () => {
-      const response = await fetch(functionUrl);
-      const data = await response.json();
-      console.log(data);
-  };
-
   //Actions for the onClick events: Checkin and Checkout:
   const Display = async () => {
-    const response = await fetch(functionUrl, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-    });
-    const data = await response.json();
-    console.log("Employees: ", data);
-    //data[0].EmployeeName
+    console.log(employeeList);
   };
-
   const Checkin = async (newCheckin) => {
     const response = await fetch(functionUrl, {
         method: 'POST',
@@ -74,7 +68,7 @@ function App() {
   return (
     <>
         <HeaderNavBar />
-        <DropdownMenu />
+        <DropdownMenu list={employeeList}/>
         <div>
           <strong>Date Time Now: {formattedDate + " " + formattedTime} </strong>
           <p> Last checkin: {checkedInTime} </p>
