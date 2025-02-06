@@ -1,6 +1,6 @@
 const { app } = require('@azure/functions');
 const { CosmosClient } = require("@azure/cosmos");
-//partition key: /EmployeesId
+//partition key: /EmployeeName
 
 // Allow self-signed certificates (Only for local development)
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -36,8 +36,10 @@ app.http('CosmosDBFunction', {
                 }
                 case "POST": {
                     // Insert a new check-in
+                    context.log("Attempting to insert a new check in record...");
                     const newCheckin = await request.json();
                     const { resource: checkInResult } = await container.items.create(newCheckin);
+                    context.log(newCheckin);
                     return {
                         status: 201,
                         body: JSON.stringify(checkInResult),
@@ -59,8 +61,8 @@ app.http('CosmosDBFunction', {
                     }
                     
                     //PROGRAM FAILS FROM HERE...
-                    const { resource: existingItem } = await container.item(id, "/EmployeesId").read(); //.item(documentId, partitionKey)
-                    context.log(await container.item(id, "/EmployeesId").read());
+                    const { resource: existingItem } = await container.item(id, "/EmployeeName").read(); //.item(documentId, partitionKey)
+                    context.log(await container.item(id, "/EmployeeName").read());
 
                     if(!existingItem){
                         return {
