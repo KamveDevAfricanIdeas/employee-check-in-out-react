@@ -29,9 +29,11 @@ function App() {
         setList(data);
         setCurrentUser([
           ...currentUser, 
-          { userName: data[0].EmployeeName, 
-            userNum: data[0].EmployeeId, 
-            userCheckTime: data[0].CheckTime} ]);
+          { 
+            userId: data[1].id,
+            userName: data[1].EmployeeName, 
+            userNum: data[1].EmployeeId, 
+            userCheckTime: data[1].CheckTime} ]);
       })
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
@@ -41,6 +43,10 @@ function App() {
 
   const Display = async () => {
     console.log(employeeList);
+    console.log("Current User");
+    console.log(currentUser[0].userName);
+    console.log(currentUser[0].userNum);
+    console.log(currentUser[0].userCheckTime);
   };
   
   const Checkin = async (newCheckin) => {
@@ -67,12 +73,13 @@ function App() {
   };
   const handleCheckin = () => {
     const newCheckin = {
-      id: "3",
+      id: uuidv4(),
       //when checking in, insert the current user details with a new time and id.
-      EmployeeId: "E003", //currentUser[0].userNum,
-      EmployeeName: "Kamve Gwijana",//currentUser[0].userName,
-      CheckTime: formattedTime,
+      EmployeeId: currentUser[0].userNum, 
+      EmployeeName: currentUser[0].userName,
+      CheckTime: formattedDate + " " + formattedTime,
     };
+    console.log("Unique Id: ", uuidv4());
     Checkin(newCheckin);
   }
 
@@ -88,7 +95,6 @@ function App() {
       }
 
       const data = await response.json();
-      //setCheckoutTime(currentTime.toLocaleTimeString());
       console.log("Check-out: ", data);
       console.log(newCheckout);
     } catch(error){
@@ -99,10 +105,10 @@ function App() {
   };
   const handleUpdate = () => {
     const newCheckout = {
-      id: "1",
-      EmployeeId: "E003",
-      EmployeeName: currentUser,
-      CheckTime: formattedTime,
+      id: currentUser[0].userId,
+      EmployeeId: currentUser[0].userNum,
+      EmployeeName: currentUser[0].userName,
+      CheckTime: formattedDate + " " + formattedTime,
     };
     Checkout(newCheckout);
   };
@@ -113,9 +119,14 @@ function App() {
         <DropdownMenu list={employeeList}/>
         <div>
           <strong>Your Details: </strong>
-          {/* <p key={uuidv4()}>Name: {currentUser[0].userName}</p> */}
-          {/* <p key={uuidv4()}>Employee Number: {currentUser[0].userNum}</p> */}
-          {/* <p key={uuidv4()}>Last Check in: {currentUser[0].userCheckTime}</p> */}
+          {currentUser.map( (user) => (
+            <div>
+              <p key={uuidv4()}>Name: {user.userName}</p>
+              <p key={uuidv4()}>Employee Number: {user.userNum}</p>
+              <p key={uuidv4()}>Last Check in: {user.userCheckTime}</p>
+            </div>
+          ))};
+
           <br></br><strong>Date Time Now: {formattedDate + " " + formattedTime} </strong>
           
           <p> Session Check in: {checkedInTime} </p>

@@ -1,4 +1,6 @@
 import '../../styles/dropdown.style.css'
+import { v4 as uuidv4 } from 'uuid';
+
 const dummy_data = [
     {
       "id": "1",
@@ -21,8 +23,8 @@ export default function DropdownMenu( {list=dummy_data} ) {
             <select name="employees" id="employees">
                 {/* loop over the names array */}
                 {list.map( (employee) => (
-                    <option key={employee.EmployeeId}>
-                        {employee.EmployeeName}
+                    <option key={employee.id}>
+                        {employee.EmployeeId + " " + employee.EmployeeName}
                     </option>
                 ))}
             </select>

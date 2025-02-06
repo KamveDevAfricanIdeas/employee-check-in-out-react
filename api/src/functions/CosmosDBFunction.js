@@ -17,7 +17,7 @@ app.http('CosmosDBFunction', {
     methods: ['GET', 'POST', 'PUT'],
     authLevel: 'anonymous',
     handler: async (request, context) => {
-        context.log(`Http function processed request for url "${request.url}"`);
+        //context.log(`Http function processed request for url "${request.url}"`);
         context.log(`The request method was: "${request.method}"`);
 
         const database = cosmosClient.database(databaseId);
@@ -49,20 +49,20 @@ app.http('CosmosDBFunction', {
                 case "PUT": {
                     const newCheckout = await request.json();
                     const id = newCheckout.id;
-                    context.log("Attempting to update the checkin record here...:");
-                    context.log(id);
-                    context.log(!id);
+                    const partitionKey = newCheckout.EmployeeName;
 
-                    if (!id) {
+                    context.log("Attempting to update the checkin record here...:");
+                    context.log("The fetched update data: ", newCheckout);
+                    if (!id || !partitionKey) {
                         return {
                             status: 404,
-                            body: JSON.stringify({ message: `Item not found with id: "${id}"` }),
+                            body: JSON.stringify({ message: `Item not found with id and partition key` }),
                         };
                     }
                     
                     //PROGRAM FAILS FROM HERE...
-                    const { resource: existingItem } = await container.item(id, "/EmployeeName").read(); //.item(documentId, partitionKey)
-                    context.log(await container.item(id, "/EmployeeName").read());
+                    const { resource: existingItem } = await container.item(id, partitionKey).read(); //.item(documentId, partitionKey)
+                    context.log(await container.item(id, partitionKey).read());
 
                     if(!existingItem){
                         return {
@@ -70,7 +70,7 @@ app.http('CosmosDBFunction', {
                         };
                     }
                     const updatedItem = { ...existingItem, ...newCheckout };
-                    const { resource: result } = await container.item(id, "/EmployeesId").replace(updatedItem);
+                    const { resource: result } = await container.item(id, partitionKey).replace(updatedItem);
                 
                     return {
                         status: 200,
