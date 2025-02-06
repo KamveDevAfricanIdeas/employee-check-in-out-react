@@ -11,8 +11,14 @@ function App() {
   const [checkedOutTime, setCheckoutTime] = useState("");
   const [employeeList, setList] = useState([]);
   const [currentUser, setCurrentUser] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+
   const functionUrl = 'http://localhost:7071/api/CosmosDBFunction';
   
+  const handleSelectedUser = (employee) => {
+    setSelectedUser(employee);
+  };
+
   const updateTime = () => {
     setCurrentTime(new Date());
   };
@@ -33,7 +39,8 @@ function App() {
             userId: data[1].id,
             userName: data[1].EmployeeName, 
             userNum: data[1].EmployeeId, 
-            userCheckTime: data[1].CheckTime} ]);
+            userCheckTime: data[1].CheckTime
+          } ]);
       })
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
@@ -116,24 +123,11 @@ function App() {
   return (
     <>
         <HeaderNavBar />
-        <DropdownMenu list={employeeList}/>
-        <div>
-          <strong>Your Details: </strong>
-          {currentUser.map( (user) => (
-            <div>
-              <p key={uuidv4()}>Name: {user.userName}</p>
-              <p key={uuidv4()}>Employee Number: {user.userNum}</p>
-              <p key={uuidv4()}>Last Check in: {user.userCheckTime}</p>
-            </div>
-          ))};
-
-          <br></br><strong>Date Time Now: {formattedDate + " " + formattedTime} </strong>
-          
-          <p> Session Check in: {checkedInTime} </p>
-          <p> Session Checkout: {checkedOutTime} </p>
-        </div>
+        {/* <h1>{selectedUser.EmployeeName}</h1> */}
+        <DropdownMenu list={employeeList} />
+          <br></br><strong>Date Time Now: {formattedDate + " " + formattedTime} </strong><br></br>
         <div className="button-class">
-          <button type="button" className="checkin-btn" onClick={Display}>Display</button>
+          {/* <button type="button" className="checkin-btn" onClick={Display}>Display</button> */}
           <button type="button" className="checkin-btn" onClick={handleCheckin}>Check-In</button>
           <button type="button" className="checkout-btn" onClick={handleUpdate}>Check-Out</button>
         </div>

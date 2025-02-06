@@ -1,33 +1,49 @@
 import '../../styles/dropdown.style.css'
 import { v4 as uuidv4 } from 'uuid';
+import React, {useEffect, useState} from 'react';
 
-const dummy_data = [
-    {
-      "id": "1",
-      "EmployeeId": "E123",
-      "EmployeeName": "Timmy Wayne",
-      "CheckTime": "2025/02/04 07:00:00",
-    },
-    {
-      "id": "2",
-      "EmployeeId": "E003",
-      "EmployeeName": "Druski Martin",
-      "CheckTime": "2025/02/05 07:00:00",
-    }
-];
+export default function DropdownMenu( {list=[]} ) {
+    const [selectedEmployeeId, setSelectedEmployeeId] = useState('');
+    const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const [userName, setName] = useState("");
 
-export default function DropdownMenu( {list=dummy_data} ) {
+    const changeUser = (event) => {
+        const selectedId = event.target.value;
+        setSelectedEmployeeId(selectedId);
+        const selectedEmployeeObject = list.find((employee) => employee.id === selectedId);
+        setSelectedEmployee(selectedEmployeeObject);
+
+        //getUser(selectedEmployeeObject);
+    };
+    useEffect( () => {
+        if (selectedEmployee !=null){
+            console.log("Changed user select");
+            console.log(selectedEmployee.EmployeeName, "---", selectedEmployee.id);
+            setName(selectedEmployee.EmployeeName);
+        }
+    }, [selectedEmployee]);
+
     return (
-        <div className="dropdown-menu">
-            <label for="employees">Select your name:</label> {/* these values should be loaded from the CosmosDB */}
-            <select name="employees" id="employees">
-                {/* loop over the names array */}
-                {list.map( (employee) => (
-                    <option key={employee.id}>
-                        {employee.EmployeeId + " " + employee.EmployeeName}
-                    </option>
-                ))}
-            </select>
-        </div>
+        <>
+            <div className="dropdown-menu">
+                <label for="employees">Select your name:</label>
+                <select value={selectedEmployeeId} onChange={changeUser} name="employees" id="employees">
+                    {list.map( (employee) => (
+                        <option key={employee.id} value={employee.id}>
+                            {employee.EmployeeId + " " + employee.EmployeeName}
+                        </option>
+                    ))}
+                </select>
+            </div>
+            <div>
+                <strong>Your Details: </strong>
+                <div>
+                    <p key={uuidv4()}>Name: {userName}</p>
+                    <p key={uuidv4()}>Id: {selectedEmployeeId}</p>
+                    {/* <p key={uuidv4()}>Employee Number: {dummy_data[0].EmployeeId}</p> */}
+                    {/* <p key={uuidv4()}>Last Check in: {dummy_data[0].CheckTime}</p> */}
+                </div>
+            </div>
+        </>
     )
 }
