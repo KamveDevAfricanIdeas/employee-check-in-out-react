@@ -10,7 +10,9 @@ const cosmosClient = new CosmosClient({
     key: process.env.COSMOSDB_KEY
 });
 const databaseId = 'EmployeeCheckins';
-const containerId = 'EmployeesContainer';
+const checkinContainerId = 'EmployeesContainer';
+const employeeListContainerId = 'EmployeesList';
+
 var cors = require('cors');
 
 app.http('CosmosDBFunction', {
@@ -21,16 +23,18 @@ app.http('CosmosDBFunction', {
         context.log(`The request method was: "${request.method}"`);
 
         const database = cosmosClient.database(databaseId);
-        const container = database.container(containerId);
+        const checkinContainer = database.container(checkinContainerId);
+        const employeeListContainer = database.container(employeeListContainerId);
         
         try {
             switch (request.method) {
                 case "GET": {
                     // Fetch all employees
-                    const { resources: items } = await container.items.readAll().fetchAll();
+                    const { resources: items } = await checkinContainer.items.readAll().fetchAll();
+                    const { resources: getEmployees } = await employeeListContainer.items.readAll().fetchAll();
                     return {
                         status: 200,
-                        body: JSON.stringify(items, null, 2),
+                        body: JSON.stringify({items, getEmployees}, null, 2),
                         headers: { "Content-Type": "application/json" }
                     };
                 }
@@ -38,8 +42,8 @@ app.http('CosmosDBFunction', {
                     // Insert a new check-in
                     context.log("Attempting to insert a new check in record...");
                     const newCheckin = await request.json();
-                    const { resource: checkInResult } = await container.items.create(newCheckin);
-                    context.log(newCheckin);
+                    const { resource: checkInResult } = await checkinContainer.items.create(newCheckin.items);
+                    context.log(newCheckin.items);
                     return {
                         status: 201,
                         body: JSON.stringify(checkInResult),
@@ -47,30 +51,30 @@ app.http('CosmosDBFunction', {
                     };
                 }
                 case "PUT": {
+                    //CURRENTLY ACCESSING THE FIRST ELEMENT IN THE RETURN json Object items: {[{}, {}, {}]}
                     const newCheckout = await request.json();
-                    const id = newCheckout.id;
-                    const partitionKey = newCheckout.EmployeeName;
+                    const id = newCheckout.items[0].id;
+                    const partitionKey = newCheckout.items[0].EmployeeName;
 
                     context.log("Attempting to update the checkin record here...:");
-                    context.log("The fetched update data: ", newCheckout);
+                    context.log("The fetched update data: ", newCheckout.items[0].EmployeeName);
                     if (!id || !partitionKey) {
                         return {
                             status: 404,
                             body: JSON.stringify({ message: `Item not found with id and partition key` }),
                         };
                     }
-                    
-                    //PROGRAM FAILS FROM HERE...
-                    const { resource: existingItem } = await container.item(id, partitionKey).read(); //.item(documentId, partitionKey)
-                    context.log(await container.item(id, partitionKey).read());
+                    const { resource: existingItem } = await checkinContainer.item(id, partitionKey).read(); //.item(documentId, partitionKey)
+                    context.log(await checkinContainer.item(id, partitionKey).read());
+                    context.log("Existing item: ", checkinContainer);
 
                     if(!existingItem){
                         return {
                             status: 404, body: JSON.stringify({message: "Item does not Exist!"})
                         };
                     }
-                    const updatedItem = { ...existingItem, ...newCheckout };
-                    const { resource: result } = await container.item(id, partitionKey).replace(updatedItem);
+                    const updatedItem = { ...existingItem, ...newCheckout.items };
+                    const { resource: result } = await checkinContainer.item(id, partitionKey).replace(updatedItem);
                 
                     return {
                         status: 200,

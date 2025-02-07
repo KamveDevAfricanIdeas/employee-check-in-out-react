@@ -12,16 +12,14 @@ import userIcon from './assets/default_user_icon.png';
 
 function App() {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [checkedInTime, setCheckinTime] = useState("");
-  const [checkedOutTime, setCheckoutTime] = useState("");
-  const [breakTime, setBreakTime] = useState("01:30:00");
+  const [breakTime, setBreakTime] = useState("0hrs 0m 0s");
+  const [updateItem, setUpdateData] = useState([]);
+  const [insertItem, setInsertItem] = useState([]);
 
   const [employeeList, setList] = useState([]);
-  const [currentUser, setCurrentUser] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   const functionUrl = 'http://localhost:7071/api/CosmosDBFunction';
-  //console.log(selectedEmployee);
 
   const updateTime = () => {
     setCurrentTime(new Date());
@@ -36,29 +34,13 @@ function App() {
     fetch(functionUrl)
       .then((response) => response.json())
       .then((data) => {
-        setList(data);
-        setCurrentUser([
-          ...currentUser, 
-          { 
-            userId: data[1].id,
-            userName: data[1].EmployeeName, 
-            userNum: data[1].EmployeeId, 
-            userCheckTime: data[1].CheckTime
-          } ]);
+        setList(data.items);
       })
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
   const formattedDate = currentTime.toLocaleDateString();
   const formattedTime = currentTime.toLocaleTimeString();
-
-  const Display = async () => {
-    console.log(employeeList);
-    console.log("Current User");
-    console.log(currentUser[0].userName);
-    console.log(currentUser[0].userNum);
-    console.log(currentUser[0].userCheckTime);
-  };
   
   const Checkin = async (newCheckin) => {
     try {
@@ -83,15 +65,25 @@ function App() {
     }
   };
   const handleCheckin = () => {
-    const newCheckin = {
-      id: uuidv4(),
-      //when checking in, insert the current user details with a new time and id.
-      EmployeeId: currentUser[0].userNum,
-      EmployeeName: currentUser[0].userName,
-      CheckTime: formattedDate + " " + formattedTime,
-    };
-    console.log("Unique Id: ", uuidv4());
-    Checkin(newCheckin);
+    if (!selectedEmployee){
+      alert("No user selected!");
+    }
+    else{
+      const items = [...insertItem, {
+        id: uuidv4(),
+        //when checking in, insert the current user details with a new time and id.
+        EmployeeId: selectedEmployee.EmployeeId,
+        EmployeeName: selectedEmployee.EmployeeName,
+        CheckTime: formattedDate + " " + formattedTime,
+      }];
+      setInsertItem(items);
+
+      const newCheckin = {
+        items
+      };
+      console.log(JSON.stringify(newCheckin));
+      Checkin(newCheckin);
+    }
   }
 
   const Checkout = async (newCheckout) => {
@@ -115,15 +107,25 @@ function App() {
     
   };
   const handleUpdate = () => {
-    const newCheckout = {
-      id: currentUser[0].userId,
-      EmployeeId: currentUser[0].userNum,
-      EmployeeName: currentUser[0].userName,
-      CheckTime: formattedDate + " " + formattedTime,
-    };
-    Checkout(newCheckout);
+    if (!selectedEmployee){
+      alert("No user selected!");
+    }
+    else{
+      const items = [...updateItem, {
+          id: selectedEmployee.id,
+          EmployeeId: selectedEmployee.EmployeeId,
+          EmployeeName: selectedEmployee.EmployeeName,
+          CheckoutTime: formattedDate + " " + formattedTime
+      }];
+      setUpdateData(items);
+      const newCheckout = {
+        items
+      };
+      console.log(newCheckout);
+      //Checkout(newCheckout);
+    }
+    
   };
-/* {selectedEmployee ? () : () } */
   return (
     <>
         <HeaderNavBar />
@@ -132,7 +134,7 @@ function App() {
             <div className="user-detail-container">
               <img className="userIcon" src={userIcon}></img>
               <h4 key={uuidv4()}>Name: {selectedEmployee.EmployeeName}</h4>
-              <h4 key={uuidv4()}>Id: {selectedEmployee.id}</h4>
+              {/* <h4 key={uuidv4()}>Id: {selectedEmployee.id}</h4> */}
               <h4 key={uuidv4()}>Last Check in: {selectedEmployee.CheckTime}</h4>
             </div>
             ) : (
