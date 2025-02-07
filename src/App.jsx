@@ -76,7 +76,7 @@ function App() {
       }
   
       const data = await response.json();
-      setCheckinTime(currentTime.toLocaleTimeString());
+      alert("Checked in!");
       console.log("Check-in successful:", data);
 
     } catch (error) {
@@ -108,7 +108,7 @@ function App() {
 
       const data = await response.json();
       console.log("Check-out: ", data);
-      console.log(newCheckout);
+      alert("Checked out!");
     } catch(error){
       console.log(error);
       console.log(newCheckout);
@@ -128,6 +128,9 @@ function App() {
   return (
     <>
         <HeaderNavBar />
+        {/* <h1>{selectedUser.EmployeeName}</h1> */}
+        <DropdownMenu list={employeeList} />
+
         <div className="date-display">
           <strong>{formattedDate} </strong>
         </div>
@@ -136,31 +139,36 @@ function App() {
             <div className="iconContainer">
               <img className="icons" src={checkinIcon}/>
             </div>
-            <strong>{formattedTime}</strong><br></br>Check In
+            <h4 id="tool-name-value">{formattedTime}</h4>
+            <h4 id="tool-name">Check In</h4>
           </button>
           <button type="button" className="activity-tool" id="checkout-btn" onClick={handleUpdate}>
             <div className="iconContainer">
               <img className="icons" src={checkoutIcon}/>
             </div>
-            <strong>{formattedTime}</strong><br></br>Check Out
+            <h4 id="tool-name-value">{formattedTime}</h4>
+            <h4 id="tool-name">Check Out</h4>
           </button>
           <div className="activity-tool">
             <div className="iconContainer">
               <img className="icons" src={clockIcon}/>
             </div>
-            <h4>{breakTime}</h4>Active Hours
+            <h4 id="tool-name-value">{breakTime}</h4>
+            <h4 id="tool-name">Active Hours</h4>
           </div>
           <div className="activity-tool">
             <div className="iconContainer">
               <img className="icons" src={breakIcon}/>
             </div>
-            <h4>{breakTime}</h4>Break
+            <h4 id="tool-name-value">{breakTime}</h4>
+            <h4 id="tool-name">Break</h4>
           </div>
         </div>
-
-        {/* <h1>{selectedUser.EmployeeName}</h1> */}
-        <DropdownMenu list={employeeList} />
-
+        <h4>Comments</h4>
+        <div className="comment-container">  
+          <input className="comment-input" placeholder="..."></input>
+          <button className="comment-btn" type="button">Send</button>
+        </div>
         <FooterBar />
     </>
   )

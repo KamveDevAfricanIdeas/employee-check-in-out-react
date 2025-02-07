@@ -13,7 +13,7 @@ export default function HeaderNavbar() {
       </div>
 
       <div className="nav-right">
-        <Button variant="default" className="contact-btn">Contact Us</Button>
+        <Button variant="default" className="contact-btn">Report Issue</Button>
       </div>
     </nav>
   );

@@ -8,8 +8,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 1rem;
-    background-color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: rgb(221, 233, 248);
+    box-shadow: 0 1px 1px rgb(64, 64, 64);
     z-index: 50;
   }
   
@@ -26,9 +26,9 @@
   
   .nav-link {
     text-decoration: none;
-    color: #4a4a4a;
+    color: rgb(64, 64, 64);
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 200;
   }
   
   .nav-link:hover {
@@ -41,6 +41,10 @@
   .contact-btn{
     border: none;
     padding: 0.5rem;
-    color: rgb(255, 255, 255);
-    background-color: rgb(85, 87, 180);
+    color: rgb(221, 233, 248);
+    background-color: rgb(63, 115, 213);
+  }
+  .contact-btn:hover {
+    border-radius: 5px;
+    background-color: rgba(63, 115, 213, 0.8);
   }
