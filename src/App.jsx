@@ -4,6 +4,10 @@ import { v4 as uuidv4 } from 'uuid';
 import DropdownMenu from './infrastructure/components/Dropdown.jsx'
 import HeaderNavBar from './infrastructure/components/Header.jsx'
 import FooterBar from './infrastructure/components/Footer.jsx'
+import clockIcon from './assets/clock.png';
+import breakIcon from './assets/coffee-break.png';
+import checkoutIcon from './assets/right-arrow.png';
+import checkinIcon from './assets/check-in.png';
 
 function App() {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -12,6 +16,7 @@ function App() {
   const [employeeList, setList] = useState([]);
   const [currentUser, setCurrentUser] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [breakTime, setBreakTime] = useState("01:30:00");
 
   const functionUrl = 'http://localhost:7071/api/CosmosDBFunction';
   
@@ -123,14 +128,39 @@ function App() {
   return (
     <>
         <HeaderNavBar />
+        <div className="date-display">
+          <strong>{formattedDate} </strong>
+        </div>
+        <div className="button-class">
+          <button type="button" className="activity-tool" id="checkin-btn" onClick={handleCheckin}>
+            <div className="iconContainer">
+              <img className="icons" src={checkinIcon}/>
+            </div>
+            <strong>{formattedTime}</strong><br></br>Check In
+          </button>
+          <button type="button" className="activity-tool" id="checkout-btn" onClick={handleUpdate}>
+            <div className="iconContainer">
+              <img className="icons" src={checkoutIcon}/>
+            </div>
+            <strong>{formattedTime}</strong><br></br>Check Out
+          </button>
+          <div className="activity-tool">
+            <div className="iconContainer">
+              <img className="icons" src={clockIcon}/>
+            </div>
+            <h4>{breakTime}</h4>Active Hours
+          </div>
+          <div className="activity-tool">
+            <div className="iconContainer">
+              <img className="icons" src={breakIcon}/>
+            </div>
+            <h4>{breakTime}</h4>Break
+          </div>
+        </div>
+
         {/* <h1>{selectedUser.EmployeeName}</h1> */}
         <DropdownMenu list={employeeList} />
-          <br></br><strong>Date Time Now: {formattedDate + " " + formattedTime} </strong><br></br>
-        <div className="button-class">
-          {/* <button type="button" className="checkin-btn" onClick={Display}>Display</button> */}
-          <button type="button" className="checkin-btn" onClick={handleCheckin}>Check-In</button>
-          <button type="button" className="checkout-btn" onClick={handleUpdate}>Check-Out</button>
-        </div>
+
         <FooterBar />
     </>
   )
