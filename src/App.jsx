@@ -8,21 +8,20 @@ import clockIcon from './assets/clock.png';
 import breakIcon from './assets/coffee-break.png';
 import checkoutIcon from './assets/right-arrow.png';
 import checkinIcon from './assets/check-in.png';
+import userIcon from './assets/default_user_icon.png';
 
 function App() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [checkedInTime, setCheckinTime] = useState("");
   const [checkedOutTime, setCheckoutTime] = useState("");
-  const [employeeList, setList] = useState([]);
-  const [currentUser, setCurrentUser] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
   const [breakTime, setBreakTime] = useState("01:30:00");
 
+  const [employeeList, setList] = useState([]);
+  const [currentUser, setCurrentUser] = useState([]);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+
   const functionUrl = 'http://localhost:7071/api/CosmosDBFunction';
-  
-  const handleSelectedUser = (employee) => {
-    setSelectedUser(employee);
-  };
+  //console.log(selectedEmployee);
 
   const updateTime = () => {
     setCurrentTime(new Date());
@@ -87,7 +86,7 @@ function App() {
     const newCheckin = {
       id: uuidv4(),
       //when checking in, insert the current user details with a new time and id.
-      EmployeeId: currentUser[0].userNum, 
+      EmployeeId: currentUser[0].userNum,
       EmployeeName: currentUser[0].userName,
       CheckTime: formattedDate + " " + formattedTime,
     };
@@ -124,13 +123,26 @@ function App() {
     };
     Checkout(newCheckout);
   };
-
+/* {selectedEmployee ? () : () } */
   return (
     <>
         <HeaderNavBar />
-        {/* <h1>{selectedUser.EmployeeName}</h1> */}
-        <DropdownMenu list={employeeList} />
-
+        {selectedEmployee ? (
+            // Render employee data only if selectedEmployee is not null
+            <div className="user-detail-container">
+              <img className="userIcon" src={userIcon}></img>
+              <h4 key={uuidv4()}>Name: {selectedEmployee.EmployeeName}</h4>
+              <h4 key={uuidv4()}>Id: {selectedEmployee.id}</h4>
+              <h4 key={uuidv4()}>Last Check in: {selectedEmployee.CheckTime}</h4>
+            </div>
+            ) : (
+            <div className="user-detail-container">
+              <p>Nothing to display</p>
+            </div>
+        )}
+        
+        <DropdownMenu list={employeeList} setSelectedEmployee={setSelectedEmployee} />
+        {/* <h1>{selectedEmployee.EmployeeName}</h1> */}
         <div className="date-display">
           <strong>{formattedDate} </strong>
         </div>
