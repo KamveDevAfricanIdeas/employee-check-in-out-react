@@ -2,18 +2,17 @@ import Button from 'react-bootstrap/Button';
 import '../../styles/header.style.css'
 import ai_logo from '../../assets/AI_Logo.png'
 
-export default function HeaderNavbar() {
+export default function HeaderNavbar({ username }) {
   return (
     <nav className="header-navbar">
 
       <div className="nav-left">
         <img src={ai_logo} alt="Logo" className="logo" />
-        <a href="/" className="nav-link">Home</a>
-        <a href="/explore" className="nav-link">Explore</a>
+        <p>Welcome, {username}!</p>
       </div>
 
       <div className="nav-right">
-        <Button variant="default" className="contact-btn">Report Issue</Button>
+        <Button variant="default" className="logout-btn">Logout</Button>
       </div>
     </nav>
   );

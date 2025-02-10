@@ -1,189 +1,52 @@
-import { useState, useEffect } from 'react'
+import React, { createContext, useState, useEffect } from "react";
+import { Route, Routes, BrowserRouter as Router, Navigate } from 'react-router-dom';
 import './App.css'
-import { v4 as uuidv4 } from 'uuid';
-import DropdownMenu from './infrastructure/components/Dropdown.jsx'
-import HeaderNavBar from './infrastructure/components/Header.jsx'
-import FooterBar from './infrastructure/components/Footer.jsx'
-import clockIcon from './assets/clock.png';
-import breakIcon from './assets/coffee-break.png';
-import checkoutIcon from './assets/right-arrow.png';
-import checkinIcon from './assets/check-in.png';
-import userIcon from './assets/default_user_icon.png';
+import LoginScreen from './infrastructure/screens/LoginScreen.jsx';
+import CheckinScreen from './infrastructure/screens/CheckinScreen.jsx';
+
+//create a context to share variables
+export const EmployeeContext = createContext();
 
 function App() {
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [breakTime, setBreakTime] = useState("0hrs 0m 0s");
-  const [updateItem, setUpdateData] = useState([]);
-  const [insertItem, setInsertItem] = useState([]);
-
-  const [employeeList, setList] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
-
-  const functionUrl = 'http://localhost:7071/api/CosmosDBFunction';
-
-  const updateTime = () => {
-    setCurrentTime(new Date());
-  };
+  const [userLocation, setUserLocation] = useState(null);
 
   useEffect(() => {
-    const timerId = setInterval(updateTime, 1000); // Update every second
-    return () => clearInterval(timerId);
+    const savedEmployee = localStorage.getItem("selectedEmployee");
+    if (savedEmployee) {
+      setSelectedEmployee(JSON.parse(savedEmployee));
+    }
   }, []);
-  //get the list of employees:
+
+  // Save selectedEmployee to localStorage whenever it changes
   useEffect(() => {
-    fetch(functionUrl)
-      .then((response) => response.json())
-      .then((data) => {
-        setList(data.items);
-      })
-      .catch((error) => console.error("Error fetching data:", error));
+    if (selectedEmployee) {
+      localStorage.setItem("selectedEmployee", JSON.stringify(selectedEmployee));
+    } else {
+      localStorage.removeItem("selectedEmployee");
+    }
+  }, [selectedEmployee]);
+
+  useEffect(() => {
+    const savedLocation = localStorage.getItem("userLocation");
+    if (savedLocation) {
+      setUserLocation(JSON.parse(savedLocation));
+    }
   }, []);
 
-  const formattedDate = currentTime.toLocaleDateString();
-  const formattedTime = currentTime.toLocaleTimeString();
-  
-  const Checkin = async (newCheckin) => {
-    try {
-      const response = await fetch(functionUrl, {
-        method: "POST",
-        body: JSON.stringify(newCheckin),
-        headers: { "Content-Type": "application/json" },
-      });
-
-      console.log(newCheckin);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-  
-      const data = await response.json();
-      alert("Checked in!");
-      console.log("Check-in successful:", data);
-
-    } catch (error) {
-      console.error("Error during check-in:", error);
-    }
-  };
-  const handleCheckin = () => {
-    if (!selectedEmployee){
-      alert("No user selected!");
-    }
-    else{
-      const items = [...insertItem, {
-        id: uuidv4(),
-        //when checking in, insert the current user details with a new time and id.
-        EmployeeId: selectedEmployee.EmployeeId,
-        EmployeeName: selectedEmployee.EmployeeName,
-        CheckTime: formattedDate + " " + formattedTime,
-      }];
-      setInsertItem(items);
-
-      const newCheckin = {
-        items
-      };
-      console.log(JSON.stringify(newCheckin));
-      Checkin(newCheckin);
-    }
-  }
-
-  const Checkout = async (newCheckout) => {
-    try {
-      const response = await fetch(functionUrl, {
-          method: 'PUT',
-          body: JSON.stringify(newCheckout),
-          headers: { 'Content-Type': 'application/json' }
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error from React Side! Status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("Check-out: ", data);
-      alert("Checked out!");
-    } catch(error){
-      console.log(error);
-      console.log(newCheckout);
-    }
-    
-  };
-  const handleUpdate = () => {
-    if (!selectedEmployee){
-      alert("No user selected!");
-    }
-    else{
-      const items = [...updateItem, {
-          id: selectedEmployee.id,
-          EmployeeId: selectedEmployee.EmployeeId,
-          EmployeeName: selectedEmployee.EmployeeName,
-          CheckoutTime: formattedDate + " " + formattedTime
-      }];
-      setUpdateData(items);
-      const newCheckout = {
-        items
-      };
-      console.log(newCheckout);
-      //Checkout(newCheckout);
-    }
-    
-  };
   return (
     <>
-        <HeaderNavBar />
-        {selectedEmployee ? (
-            // Render employee data only if selectedEmployee is not null
-            <div className="user-detail-container">
-              <img className="userIcon" src={userIcon}></img>
-              <h4 key={uuidv4()}>Name: {selectedEmployee.EmployeeName}</h4>
-              {/* <h4 key={uuidv4()}>Id: {selectedEmployee.id}</h4> */}
-              <h4 key={uuidv4()}>Last Check in: {selectedEmployee.CheckTime}</h4>
-            </div>
-            ) : (
-            <div className="user-detail-container">
-              <p>Nothing to display</p>
-            </div>
-        )}
-        
-        <DropdownMenu list={employeeList} setSelectedEmployee={setSelectedEmployee} />
-        {/* <h1>{selectedEmployee.EmployeeName}</h1> */}
-        <div className="date-display">
-          <strong>{formattedDate} </strong>
-        </div>
-        <div className="button-class">
-          <button type="button" className="activity-tool" id="checkin-btn" onClick={handleCheckin}>
-            <div className="iconContainer">
-              <img className="icons" src={checkinIcon}/>
-            </div>
-            <h4 id="tool-name-value">{formattedTime}</h4>
-            <h4 id="tool-name">Check In</h4>
-          </button>
-          <button type="button" className="activity-tool" id="checkout-btn" onClick={handleUpdate}>
-            <div className="iconContainer">
-              <img className="icons" src={checkoutIcon}/>
-            </div>
-            <h4 id="tool-name-value">{formattedTime}</h4>
-            <h4 id="tool-name">Check Out</h4>
-          </button>
-          <div className="activity-tool">
-            <div className="iconContainer">
-              <img className="icons" src={clockIcon}/>
-            </div>
-            <h4 id="tool-name-value">{breakTime}</h4>
-            <h4 id="tool-name">Active Hours</h4>
-          </div>
-          <div className="activity-tool">
-            <div className="iconContainer">
-              <img className="icons" src={breakIcon}/>
-            </div>
-            <h4 id="tool-name-value">{breakTime}</h4>
-            <h4 id="tool-name">Break</h4>
-          </div>
-        </div>
-        <h4>Comments</h4>
-        <div className="comment-container">  
-          <input className="comment-input" placeholder="..."></input>
-          <button className="comment-btn" type="button">Send</button>
-        </div>
-        <FooterBar />
+      <EmployeeContext.Provider value={
+        { selectedEmployee, setSelectedEmployee, userLocation, setUserLocation}}
+      >
+        <Router>
+            <Routes>
+                <Route exact path="/" element={<LoginScreen />} />
+                <Route path="/checkin" element={<CheckinScreen />}  />
+                <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+        </Router>
+      </EmployeeContext.Provider>
     </>
   )
 }
