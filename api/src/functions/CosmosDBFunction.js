@@ -12,7 +12,7 @@ const cosmosClient = new CosmosClient({
 const databaseId = 'EmployeeCheckins';
 const checkinContainerId = 'EmployeesContainer';
 const employeeListContainerId = 'EmployeesList';
-
+const loginContainerId = 'LoginContainer';
 var cors = require('cors');
 
 app.http('CosmosDBFunction', {
@@ -25,6 +25,7 @@ app.http('CosmosDBFunction', {
         const database = cosmosClient.database(databaseId);
         const checkinContainer = database.container(checkinContainerId);
         const employeeListContainer = database.container(employeeListContainerId);
+        const loginContainer = database.container(loginContainerId);
         
         try {
             switch (request.method) {
@@ -32,9 +33,10 @@ app.http('CosmosDBFunction', {
                     // Fetch all employees
                     const { resources: items } = await checkinContainer.items.readAll().fetchAll();
                     const { resources: getEmployees } = await employeeListContainer.items.readAll().fetchAll();
+                    const { resources: loginData } = await loginContainer.items.readAll().fetchAll();
                     return {
                         status: 200,
-                        body: JSON.stringify({items, getEmployees}, null, 2),
+                        body: JSON.stringify({items, getEmployees, loginData}, null, 2),
                         headers: { "Content-Type": "application/json" }
                     };
                 }
@@ -53,11 +55,11 @@ app.http('CosmosDBFunction', {
                 case "PUT": {
                     //CURRENTLY ACCESSING THE FIRST ELEMENT IN THE RETURN json Object items: {[{}, {}, {}]}
                     const newCheckout = await request.json();
-                    const id = newCheckout.items[0].id;
-                    const partitionKey = newCheckout.items[0].EmployeeName;
+                    const id = newCheckout.items.id;
+                    const partitionKey = newCheckout.items.EmployeeName;
 
                     context.log("Attempting to update the checkin record here...:");
-                    context.log("The fetched update data: ", newCheckout.items[0].EmployeeName);
+                    context.log("The fetched update data: ", newCheckout.items.EmployeeName);
                     if (!id || !partitionKey) {
                         return {
                             status: 404,

@@ -7,11 +7,13 @@ import { EmployeeContext } from "../../App.jsx";
 export default function LoginScreen() {
     const [employeeList, setList] = useState([]);
     const [checkinList, setCheckinList] = useState([]);
+    const [loginData, setLoginData] = useState([]);
     const [isFetchingLocation, setIsFetchingLocation] = useState(false);
     const [passwordInput, setPasswordInput] = useState("");
 
     const navigate = useNavigate();
     const { setSelectedEmployee, setUserLocation } = useContext(EmployeeContext);
+    const { selectedEmployee  } = useContext(EmployeeContext);
     const functionUrl = 'http://localhost:7071/api/CosmosDBFunction';
 
     //get the list of employees:
@@ -21,10 +23,30 @@ export default function LoginScreen() {
         .then((data) => {
             setList(data.getEmployees);
             setCheckinList(data.items);
+            setLoginData(data.loginData);
         })
         .catch((error) => console.error("Error fetching data:", error));
     }, []);
 
+    const VerifyUser = (input) => {
+        if (!selectedEmployee) {
+            alert("Please choose your name in the list below!");
+        } else {
+            loginData.some(user => {
+                if (user.EmployeeNumber === selectedEmployee.EmployeeNumber) {
+                    console.log("User Found!");
+                    if (input === user.password) {
+                        alert("Login Successful!");
+                        navigate("/checkin");
+                    } else {
+                        alert("Incorrect password!");
+                        navigate("/");
+                    }
+                } 
+            })
+        }
+
+    };
     const LoginUser = () => {
         if (navigator.geolocation) {
             setIsFetchingLocation(true);
@@ -37,11 +59,7 @@ export default function LoginScreen() {
                     localStorage.setItem("userLocation", JSON.stringify(locationData)); // Save immediately
                     setUserLocation({ latitude, longitude });
                     setIsFetchingLocation(false);
-                    if (passwordInput === "123DevTeam") {
-                        navigate("/checkin");
-                    } else {
-                        alert("Incorrect Password!");
-                    }
+                    VerifyUser(passwordInput);
                 },
                 (error) => {
                     console.error('Error getting user location:', error);

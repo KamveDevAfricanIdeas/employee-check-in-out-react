@@ -13,12 +13,8 @@ export default function CheckinScreen() {
     const [currentTime, setCurrentTime] = useState(new Date());
     const formattedDate = currentTime.toLocaleDateString();
     const formattedTime = currentTime.toLocaleTimeString();
-
     const [breakTime, setBreakTime] = useState("0hrs 0m 0s");
-    const [updateItem, setUpdateData] = useState([]);
-    const [insertItem, setInsertItem] = useState([]);
-
-    const [employeeList, setList] = useState([]);
+    const [isCheckedIn, setIsCheckedIn] = useState(false);
     const { selectedEmployee, userLocation } = useContext(EmployeeContext);
 
     const functionUrl = 'http://localhost:7071/api/CosmosDBFunction';
@@ -55,25 +51,17 @@ export default function CheckinScreen() {
       }
     };
     const handleCheckin = () => {
-      if (!selectedEmployee){
-        alert("No user selected!");
-      }
-      else{
-        const items = [...insertItem, {
+      const newCheckin = {
+        items : {
           id: uuidv4(),
-          //when checking in, insert the current user details with a new time and id.
           EmployeeNumber: selectedEmployee.EmployeeNumber,
           EmployeeName: selectedEmployee.EmployeeName,
           CheckTime: formattedDate + " " + formattedTime,
-        }];
-        setInsertItem(items);
-  
-        const newCheckin = {
-          items
-        };
-        console.log(newCheckin);
-        //Checkin(newCheckin);
-      }
+        }
+      };
+      console.log(newCheckin);
+      setIsCheckedIn(true);
+      //Checkin(newCheckin);
     }
     const Checkout = async (newCheckout) => {
       try {
@@ -96,23 +84,17 @@ export default function CheckinScreen() {
       
     };
     const handleUpdate = () => {
-      if (!selectedEmployee){
-        alert("No user selected!");
-      }
-      else{
-        const items = [...updateItem, {
-            id: selectedEmployee.id,
-            EmployeeNumber: selectedEmployee.EmployeeNumber,
-            EmployeeName: selectedEmployee.EmployeeName,
-            CheckoutTime: formattedDate + " " + formattedTime
-        }];
-        setUpdateData(items);
-        const newCheckout = {
-          items
-        };
-        console.log(newCheckout);
-        //Checkout(newCheckout);
-      }
+      const newCheckout = {
+        items: {
+          id: selectedEmployee.id,
+          EmployeeNumber: selectedEmployee.EmployeeNumber,
+          EmployeeName: selectedEmployee.EmployeeName,
+          CheckoutTime: formattedDate + " " + formattedTime
+        }
+      };
+      console.log(newCheckout);
+      setIsCheckedIn(false);
+      //Checkout(newCheckout);
     };
     return(
         <>
@@ -122,52 +104,48 @@ export default function CheckinScreen() {
                         console.log(selectedEmployee.EmployeeName);
                         console.log(selectedEmployee.id);
                         console.log(selectedEmployee.EmployeeNumber);
-                        /* 
-                            ISSUE: When logging in, the system passes in the data from the EmployeeNames list and not the EmployeeCheckinList
-                            thus we cannot read the CheckTime or CheckoutTime
-                        */
                         console.log(selectedEmployee.CheckTime);
                     }
-                }>testt</button>
+                }>test</button>
             <div className="date-display">
                 <strong>{formattedDate} </strong>
-                {!userLocation ? (<p>Can't Find Location</p>) :
-                (<strong>{userLocation.latitude + " " + userLocation.longitude}</strong>) }
+{/*                 {!userLocation ? (<p>Can't Find Location</p>) :
+                (<strong>{userLocation.latitude + " " + userLocation.longitude}</strong>) } */}
             </div>
             <div className="user-detail-container">
-                <p>Your last check in</p>
-                {selectedEmployee ? ( <h5>{selectedEmployee.CheckTime}</h5>
-                ) : ( <p>Can't find last check in time. Not logged in!</p> )}
+                <p>Checked In {isCheckedIn}</p>
+                {/* {selectedEmployee ? ( <h5>{selectedEmployee.CheckTime}</h5>
+                ) : ( <p>Can't find last check in time. Not logged in!</p> )} */}
             </div>
             <div className="button-class">
-                <button type="button" className="activity-tool" id="checkin-btn" onClick={handleCheckin}>
+                <button disabled={isCheckedIn} type="button" className="activity-tool" id="checkin-btn" onClick={handleCheckin}>
                     <div className="iconContainer">
                     <img className="icons" src={checkinIcon}/>
                     </div>
-                    <h4 id="tool-name-value">{formattedTime}</h4>
+                    <h4 id="tool-name-value">{isCheckedIn ? "checked in" : formattedTime}</h4>
                     <h4 id="tool-name">Check In</h4>
                 </button>
-                <button type="button" className="activity-tool" id="checkout-btn" onClick={handleUpdate}>
+                <button disabled={!isCheckedIn} type="button" className="activity-tool" id="checkout-btn" onClick={handleUpdate}>
                     <div className="iconContainer">
                     <img className="icons" src={checkoutIcon}/>
                     </div>
-                    <h4 id="tool-name-value">{formattedTime}</h4>
+                    <h4 id="tool-name-value">{!isCheckedIn ? "checked out" : formattedTime}</h4>
                     <h4 id="tool-name">Check Out</h4>
                 </button>
-                <div className="activity-tool">
+                <button disabled="true" type="button" className="activity-tool">
                     <div className="iconContainer">
                     <img className="icons" src={clockIcon}/>
                     </div>
                     <h4 id="tool-name-value">{breakTime}</h4>
                     <h4 id="tool-name">Active Hours</h4>
-                </div>
-                <div className="activity-tool">
+                </button>
+                <button disabled={!isCheckedIn} type="button" className="activity-tool" id="checkout-btn">
                     <div className="iconContainer">
                     <img className="icons" src={breakIcon}/>
                     </div>
                     <h4 id="tool-name-value">{breakTime}</h4>
                     <h4 id="tool-name">Break</h4>
-                </div>
+                </button>
             </div>
             <h4>Comments</h4>
             <div className="comment-container">  
