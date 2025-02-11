@@ -1,5 +1,4 @@
 import '../../styles/dropdown.style.css'
-import { v4 as uuidv4 } from 'uuid';
 import React, {useEffect, useState} from 'react';
 
 export default function DropdownMenu( { list=[], checkinList=[], setSelectedEmployee } ) {

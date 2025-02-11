@@ -128,6 +128,13 @@ export default function CheckinScreen() {
       setIsRunning(true);
       //Checkin(newCheckin);
     }
+    const clearActivityTime = () => {
+      localStorage.removeItem("isRunning"); // Clear employee data
+      localStorage.removeItem("activityTime"); // Clear location data
+      setIsRunning(false); // Reset state
+      setActivityTime(0); // Reset state
+      //navigate("/"); // Redirect to login page
+    };
     const Checkout = async (newCheckout) => {
       try {
         const response = await fetch(functionUrl, {
@@ -159,69 +166,59 @@ export default function CheckinScreen() {
           ActivityTime: formatTime(activityTime)
         }
       };
+      clearActivityTime();
       setIsCheckedIn(false);
       setIsRunning(false);
       //Checkout(newCheckout);
-      console.log(newCheckout);
     };
 //==============================================================================================================================//
     return(
         <>
-            <HeaderNavBar username={selectedEmployee ? selectedEmployee.EmployeeName : "Getting information ..."}/>
-            <button type="button" className="login-btn" onClick={() => 
-                    { 
-                        console.log(selectedEmployee.EmployeeName);
-                        console.log(selectedEmployee.id);
-                        console.log(selectedEmployee.EmployeeNumber);
-                        console.log(selectedEmployee.CheckTime);
-                    }
-                }>test</button>
-            <div className="date-display">
-                <strong>{formattedDate} </strong>
+          <HeaderNavBar username={selectedEmployee ? selectedEmployee.EmployeeName : "Getting information ..."}/>
+          <div className="date-display">
+              <strong>{formattedDate} </strong>
 {/*                 {!userLocation ? (<p>Can't Find Location</p>) :
-                (<strong>{userLocation.latitude + " " + userLocation.longitude}</strong>) } */}
-            </div>
-            <div className="user-detail-container">
-                <p>Start your work day</p>
-                {/* {selectedEmployee ? ( <h5>{selectedEmployee.CheckTime}</h5>
-                ) : ( <p>Can't find last check in time. Not logged in!</p> )} */}
-            </div>
-            <div className="button-class">
-                <button disabled={checkedIn} type="button" className="activity-tool" id="checkin-btn" onClick={handleCheckin}>
-                    <div className="iconContainer">
-                    <img className="icons" src={checkinIcon}/>
-                    </div>
-                    <h4 id="tool-name-value">{checkedIn ? "checked in" : formattedTime}</h4>
-                    <h4 id="tool-name">Check In</h4>
-                </button>
-                <button disabled={!checkedIn} type="button" className="activity-tool" id="checkout-btn" onClick={handleUpdate}>
-                    <div className="iconContainer">
-                    <img className="icons" src={checkoutIcon}/>
-                    </div>
-                    <h4 id="tool-name-value">{!checkedIn ? "checked out" : formattedTime}</h4>
-                    <h4 id="tool-name">Check Out</h4>
-                </button>
-                <button disabled={true} type="button" className="activity-tool">
-                    <div className="iconContainer">
+              (<strong>{userLocation.latitude + " " + userLocation.longitude}</strong>) } */}
+          </div>
+          <div className="user-detail-container">
+              <p>Start your work day</p>
+          </div>
+          <div className="button-class">
+              <button disabled={checkedIn} type="button" className="activity-tool" id="checkin-btn" onClick={handleCheckin}>
+                  <div className="iconContainer">
+                  <img className="icons" src={checkinIcon}/>
+                  </div>
+                  <h4 id="tool-name-value">{checkedIn ? "checked in" : formattedTime}</h4>
+                  <h4 id="tool-name">Check In</h4>
+              </button>
+              <button disabled={!checkedIn} type="button" className="activity-tool" id="checkout-btn" onClick={handleUpdate}>
+                  <div className="iconContainer">
+                  <img className="icons" src={checkoutIcon}/>
+                  </div>
+                  <h4 id="tool-name-value">{!checkedIn ? "checked out" : formattedTime}</h4>
+                  <h4 id="tool-name">Check Out</h4>
+              </button>
+              <button disabled={true} type="button" className="activity-tool">
+                  <div className="iconContainer">
                     <img className="icons" src={clockIcon}/>
-                    </div>
-                    <h4 id="tool-name-value">{formatTime(activityTime)}</h4>
-                    <h4 id="tool-name">Active Hours</h4>
-                </button>
-                <button disabled={!checkedIn} type="button" className="activity-tool" id="checkout-btn">
-                    <div className="iconContainer">
-                    <img className="icons" src={breakIcon}/>
-                    </div>
-                    <h4 id="tool-name-value">{breakTime}</h4>
-                    <h4 id="tool-name">Break</h4>
-                </button>
-            </div>
-            <h4>Comments</h4>
-            <div className="comment-container">  
-                <input className="comment-input" placeholder="..."></input>
-                <button className="comment-btn" type="button">Send</button>
-            </div>
-            <FooterBar />
+                  </div>
+                  <h4 id="tool-name-value">{formatTime(activityTime)}</h4>
+                  <h4 id="tool-name">Active Hours</h4>
+              </button>
+              <button disabled={!checkedIn} type="button" className="activity-tool" id="checkout-btn">
+                  <div className="iconContainer">
+                  <img className="icons" src={breakIcon}/>
+                  </div>
+                  <h4 id="tool-name-value">{breakTime}</h4>
+                  <h4 id="tool-name">Break</h4>
+              </button>
+          </div>
+          <h4>Comments</h4>
+          <div className="comment-container">  
+              <input className="comment-input" placeholder="..."></input>
+              <button className="comment-btn" type="button">Send</button>
+          </div>
+          <FooterBar />
         </>
     )
 }

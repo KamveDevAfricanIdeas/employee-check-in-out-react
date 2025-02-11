@@ -15,7 +15,7 @@ export default function HeaderNavbar({ username }) {
     setSelectedEmployee(null); // Reset state
     setUserLocation(null); // Reset state
     navigate("/"); // Redirect to login page
-};
+  };
   return (
     <nav className="header-navbar">
 
