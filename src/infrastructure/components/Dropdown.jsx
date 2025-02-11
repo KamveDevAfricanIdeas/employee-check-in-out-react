@@ -16,7 +16,6 @@ export default function DropdownMenu( { list=[], checkinList=[], setSelectedEmpl
         <>
             <div className="dropdown-menu">
                 <select value={selectedEmployeeId} onChange={changeUser} name="employees" id="employees">
-                    <option value="" disabled>Change User</option>
                     {list.map( (employee) => (
                         <option key={employee.EmployeeNumber} value={employee.EmployeeNumber}>
                             {employee.EmployeeNumber} {employee.EmployeeName}

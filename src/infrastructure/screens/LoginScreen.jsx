@@ -29,6 +29,12 @@ export default function LoginScreen() {
     }, []);
 
     const VerifyUser = (input) => {
+        /* 
+            ISSUE:
+                If the employee checkin record doesnt exist in the contaier
+                then you wont be able to login.
+                Potential fix: Read from another table to get details.
+        */
         if (!selectedEmployee) {
             alert("Please choose your name in the list below!");
         } else {
