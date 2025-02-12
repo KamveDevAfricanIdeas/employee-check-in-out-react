@@ -9,7 +9,7 @@
     padding: 1rem;
     gap: 1rem;
     color: rgb(221, 233, 248);
-    background-color: rgb(64, 64, 64);
+    background-color: rgb(58, 72, 90);
 }
 .social-links {
     display: flex;
@@ -23,5 +23,5 @@
 }
     
 .footer-link:hover {
-    color: #000;
+    text-decoration: underline;
 }

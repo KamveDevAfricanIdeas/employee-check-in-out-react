@@ -42,9 +42,9 @@
     border: none;
     padding: 0.5rem;
     color: rgb(221, 233, 248);
-    background-color: rgb(63, 115, 213);
+    background-color: rgb(64, 64, 64);
   }
   .logout-btn:hover {
-    border-radius: 5px;
-    background-color: rgba(63, 115, 213, 0.8);
+    border-radius: 3px;
+    background-color: rgba(64, 64, 64, 0.8);
   }

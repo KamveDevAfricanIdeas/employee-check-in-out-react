@@ -3,19 +3,63 @@ import { useNavigate } from "react-router-dom";
 import '../../styles/loginscreen.style.css';
 import DropdownMenu from '../components/Dropdown';
 import { EmployeeContext } from "../../App.jsx";
-
+//======================================================================================================//
 export default function LoginScreen() {
     const [employeeList, setList] = useState([]);
     const [checkinList, setCheckinList] = useState([]);
     const [loginData, setLoginData] = useState([]);
     const [isFetchingLocation, setIsFetchingLocation] = useState(false);
     const [passwordInput, setPasswordInput] = useState("");
-
+    const [locationName, setLocationName] = useState("");
     const navigate = useNavigate();
     const { setSelectedEmployee, setUserLocation } = useContext(EmployeeContext);
     const { selectedEmployee  } = useContext(EmployeeContext);
     const functionUrl = 'http://localhost:7071/api/CosmosDBFunction';
 
+//======================================================================================================//
+    //api variables to get location name
+    const GetLocationName = (latitude, longitude) => {
+        var api_key = 'c43751398da440fe8752fd8cbdc00a2e';
+        var query = latitude + ',' + longitude;
+        var api_url = 'https://api.opencagedata.com/geocode/v1/json';
+        var request_url = api_url 
+            + '?' 
+            + 'key=' + api_key 
+            + '&q=' + encodeURIComponent(query) 
+            + '&pretty=1' 
+            + '&no_annotations=1';
+        var request = new XMLHttpRequest();
+        request.open('GET', request_url, true);
+      
+        request.onload = function() {
+          // see full list of possible response codes:
+          // https://opencagedata.com/api#codes
+      
+          if (request.status === 200){
+            // Success!
+            var data = JSON.parse(request.responseText);
+            //alert(data.results[0].formatted); // print the location
+            setLocationName(data.results[0].formatted);
+          } else if (request.status <= 500){
+            // We reached our target server, but it returned an error
+      
+            console.log("unable to geocode! Response code: " + request.status);
+            var data = JSON.parse(request.responseText);
+            console.log('error msg: ' + data.status.message);
+            setLocationName("Can't find location name!");
+          } else {
+            setLocationName("Can't find location name!");
+          }
+        };
+      
+        request.onerror = function() {
+          // There was a connection error of some sort
+          console.log("unable to connect to server");
+        };
+      
+        request.send();  // make the request
+    };
+//======================================================================================================//
     //get the list of employees:
     useEffect(() => {
         fetch(functionUrl)
@@ -51,7 +95,6 @@ export default function LoginScreen() {
                 } 
             })
         }
-
     };
     const LoginUser = () => {
         if (navigator.geolocation) {
@@ -59,11 +102,11 @@ export default function LoginScreen() {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const { latitude, longitude } = position.coords;
-                    const locationData = { latitude, longitude };
+                    GetLocationName(latitude, longitude);
+                    setUserLocation( locationName );
 
-                    setUserLocation(locationData);
-                    localStorage.setItem("userLocation", JSON.stringify(locationData)); // Save immediately
-                    setUserLocation({ latitude, longitude });
+                    localStorage.setItem("userLocation", JSON.stringify( locationName )); // Save immediately
+                    setUserLocation( locationName );
                     setIsFetchingLocation(false);
                     VerifyUser(passwordInput);
                 },
@@ -76,7 +119,7 @@ export default function LoginScreen() {
             console.error('Geolocation is not supported by this browser.');
         }
       };
-
+//======================================================================================================//
     return (
         <>
             <div className="login-container">
@@ -103,3 +146,4 @@ export default function LoginScreen() {
         </>
     );
 }
+//======================================================================================================//

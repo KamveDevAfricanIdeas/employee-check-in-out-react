@@ -13,9 +13,10 @@ export default function CheckinScreen() {
     const [currentTime, setCurrentTime] = useState(new Date());
     const formattedDate = currentTime.toLocaleDateString();
     const formattedTime = currentTime.toLocaleTimeString();
-    const [breakTime, setBreakTime] = useState("00hrs 00m 00s");
     const [isRunning, setIsRunning] = useState(false);
+    const [isBreak, setIsBreak] = useState(false);
     const [activityTime, setActivityTime] = useState(0);
+    const [breakTime, setBreakTime] = useState(0);
     const [checkedIn, setIsCheckedIn] = useState(false);
     const { selectedEmployee, userLocation } = useContext(EmployeeContext);
     const functionUrl = 'http://localhost:7071/api/CosmosDBFunction';
@@ -40,6 +41,17 @@ export default function CheckinScreen() {
       }
       return () => clearInterval(interval);
     }, [isRunning]);
+    useEffect(() => {
+      let interval;
+      if (isBreak) {
+        interval = setInterval(() => {
+          setBreakTime((prevTime) => prevTime + 1);
+        }, 1000);
+      } else {
+        clearInterval(interval);
+      }
+      return () => clearInterval(interval);
+    }, [isBreak]);
 
     const formatTime = (seconds) => {
       const h = Math.floor(seconds / 3600).toString().padStart(2, "0");
@@ -91,7 +103,19 @@ export default function CheckinScreen() {
       }
     }, [checkedIn]);
 //==============================================================================================================================//
-
+    const clearActivityTime = () => {
+      localStorage.removeItem("isRunning"); // Clear employee data
+      localStorage.removeItem("activityTime"); // Clear location data
+      setIsRunning(false); // Reset state
+      setActivityTime(0); // Reset state
+    };
+    const clearBreakTime = () => {
+      localStorage.removeItem("isBreak");
+      localStorage.removeItem("breakTime");
+      setIsBreak(false);
+      setBreakTime(0);
+    };
+//==============================================================================================================================//
     const Checkin = async (newCheckin) => {
       try {
         const response = await fetch(functionUrl, {
@@ -128,13 +152,6 @@ export default function CheckinScreen() {
       setIsRunning(true);
       //Checkin(newCheckin);
     }
-    const clearActivityTime = () => {
-      localStorage.removeItem("isRunning"); // Clear employee data
-      localStorage.removeItem("activityTime"); // Clear location data
-      setIsRunning(false); // Reset state
-      setActivityTime(0); // Reset state
-      //navigate("/"); // Redirect to login page
-    };
     const Checkout = async (newCheckout) => {
       try {
         const response = await fetch(functionUrl, {
@@ -167,9 +184,13 @@ export default function CheckinScreen() {
         }
       };
       clearActivityTime();
+      clearBreakTime();
       setIsCheckedIn(false);
-      setIsRunning(false);
       //Checkout(newCheckout);
+    };
+    const HandleBreakTime = () => {
+      setIsRunning(!isRunning);
+      setIsBreak(!isBreak);
     };
 //==============================================================================================================================//
     return(
@@ -182,6 +203,7 @@ export default function CheckinScreen() {
           </div>
           <div className="user-detail-container">
               <p>Start your work day</p>
+              <p>Location: {userLocation}</p>
           </div>
           <div className="button-class">
               <button disabled={checkedIn} type="button" className="activity-tool" id="checkin-btn" onClick={handleCheckin}>
@@ -205,11 +227,11 @@ export default function CheckinScreen() {
                   <h4 id="tool-name-value">{formatTime(activityTime)}</h4>
                   <h4 id="tool-name">Active Hours</h4>
               </button>
-              <button disabled={!checkedIn} type="button" className="activity-tool" id="checkout-btn">
+              <button disabled={!checkedIn} type="button" className="activity-tool" id="checkout-btn" onClick={HandleBreakTime}>
                   <div className="iconContainer">
                   <img className="icons" src={breakIcon}/>
                   </div>
-                  <h4 id="tool-name-value">{breakTime}</h4>
+                  <h4 id="tool-name-value">{formatTime(breakTime)}</h4>
                   <h4 id="tool-name">Break</h4>
               </button>
           </div>

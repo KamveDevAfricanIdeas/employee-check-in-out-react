@@ -9,7 +9,7 @@ export const EmployeeContext = createContext();
 
 function App() {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const [userLocation, setUserLocation] = useState(null);
+  const [userLocation, setUserLocation] = useState("");
 
   useEffect(() => {
     const savedEmployee = localStorage.getItem("selectedEmployee");
