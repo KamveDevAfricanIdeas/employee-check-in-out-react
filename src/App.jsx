@@ -3,13 +3,13 @@ import { Route, Routes, BrowserRouter as Router, Navigate } from 'react-router-d
 import './App.css'
 import LoginScreen from './infrastructure/screens/LoginScreen.jsx';
 import CheckinScreen from './infrastructure/screens/CheckinScreen.jsx';
-
 //create a context to share variables
 export const EmployeeContext = createContext();
-
+//==============================================================================================================================//
 function App() {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [userLocation, setUserLocation] = useState("");
+  const [token, setToken] = useState();
 
   useEffect(() => {
     const savedEmployee = localStorage.getItem("selectedEmployee");
@@ -33,7 +33,11 @@ function App() {
       setUserLocation(JSON.parse(savedLocation));
     }
   }, []);
-
+//==============================================================================================================================//
+  //CHECK IF THE UNAUTHENTICATED USER HAS A TOKEN, IF NOT FETCH AND CREATE ONE.
+  /* if (!token) {
+    return <LoginScreen setToken={setToken}/>
+  } */
   return (
     <>
       <EmployeeContext.Provider value={
@@ -51,3 +55,4 @@ function App() {
   )
 }
 export default App
+//==============================================================================================================================//

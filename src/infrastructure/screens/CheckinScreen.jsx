@@ -3,6 +3,7 @@ import { EmployeeContext } from "../../App";
 import { v4 as uuidv4 } from 'uuid';
 import HeaderNavBar from '../../infrastructure/components/Header.jsx'
 import FooterBar from '../../infrastructure/components/Footer.jsx'
+import PopupComponent from '../components/Popup.jsx';
 import clockIcon from '../../assets/clock.png';
 import breakIcon from '../../assets/coffee-break.png';
 import checkoutIcon from '../../assets/right-arrow.png';
@@ -150,7 +151,7 @@ export default function CheckinScreen() {
       };
       setIsCheckedIn(true);
       setIsRunning(true);
-      //Checkin(newCheckin);
+      Checkin(newCheckin);
     }
     const Checkout = async (newCheckout) => {
       try {
@@ -186,7 +187,7 @@ export default function CheckinScreen() {
       clearActivityTime();
       clearBreakTime();
       setIsCheckedIn(false);
-      //Checkout(newCheckout);
+      Checkout(newCheckout);
     };
     const HandleBreakTime = () => {
       setIsRunning(!isRunning);
@@ -202,8 +203,7 @@ export default function CheckinScreen() {
               (<strong>{userLocation.latitude + " " + userLocation.longitude}</strong>) } */}
           </div>
           <div className="user-detail-container">
-              <p>Start your work day</p>
-              <p>Location: {userLocation}</p>
+              <p>{userLocation}</p>
           </div>
           <div className="button-class">
               <button disabled={checkedIn} type="button" className="activity-tool" id="checkin-btn" onClick={handleCheckin}>
@@ -238,7 +238,7 @@ export default function CheckinScreen() {
           <h4>Comments</h4>
           <div className="comment-container">  
               <input className="comment-input" placeholder="..."></input>
-              <button className="comment-btn" type="button">Send</button>
+              <PopupComponent buttonLabel={"Send"} popupInfo={"Submitted a brief summary of what you did today."}/>
           </div>
           <FooterBar />
         </>

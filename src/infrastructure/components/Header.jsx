@@ -12,6 +12,11 @@ export default function HeaderNavbar({ username }) {
   const logoutUser = () => {
     localStorage.removeItem("selectedEmployee"); // Clear employee data
     localStorage.removeItem("userLocation"); // Clear location data
+    localStorage.removeItem("isBreak");
+    localStorage.removeItem("breakTime");
+    localStorage.removeItem("isRunning"); // Clear employee data
+    localStorage.removeItem("activityTime");
+    
     setSelectedEmployee(null); // Reset state
     setUserLocation(null); // Reset state
     navigate("/"); // Redirect to login page
